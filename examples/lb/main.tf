@@ -13,12 +13,21 @@ resource "hcloud_network_subnet" "foonet" {
 module "lb" {
   source = "../.."
 
-  name             = "example-lb"
-  location         = "fsn1"
-  subnet_id        = hcloud_network_subnet.foonet.id
-  ip               = "10.10.0.2"
-  protocol         = "tcp"
-  listen_port      = 80
-  destination_port = 30080
-  label_selector   = "pool=agent"
+  name      = "example-lb"
+  location  = "fsn1"
+  subnet_id = hcloud_network_subnet.foonet.id
+  ip        = "10.10.0.2"
+  service_configs = [
+    {
+      protocol         = "tcp"
+      listen_port      = 80
+      destination_port = 30080
+    },
+    {
+      protocol         = "tcp"
+      listen_port      = 443
+      destination_port = 30443
+    },
+  ]
+  label_selector = "pool=agent"
 }

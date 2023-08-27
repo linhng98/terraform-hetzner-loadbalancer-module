@@ -43,54 +43,34 @@ variable "enable_public_interface" {
   default     = true
 }
 
-variable "protocol" {
-  description = "Protocol of the service. http, https or tcp"
-  type        = string
-}
-
-variable "listen_port" {
-  description = "Port the service listen on, required if protocol is tcp. Can be everything between 1 and 65535. Must be unique per Load Balancer."
-  type        = number
-}
-
-variable "destination_port" {
-  description = "Port the service connects to the targets on, required if protocol is tcp. Can be everything between 1 and 65535."
-  type        = number
-}
-
-variable "proxyprotocol" {
-  description = "Enable proxyprotocol."
-  type        = bool
-  default     = false
-}
-
-variable "http_configs" {
-  description = "List of http configurations when protocol is http or https."
+variable "service_configs" {
+  description = "List service port and healthcheck config."
   type = list(object({
-    sticky_sessions = optional(bool, false)
-    cookie_name     = optional(string)
-    cookie_lifetime = optional(number)
-    certificates    = optional(list(string))
-    redirect_http   = optional(bool)
-  }))
-  default = []
-}
-
-variable "health_check_configs" {
-  description = "List of health check configurations."
-  type = list(object({
-    protocol = string
-    port     = number
-    interval = number
-    timeout  = number
-    retries  = optional(number, 10)
-
+    protocol         = string
+    listen_port      = number
+    destination_port = number
+    proxyprotocol    = optional(bool, false)
     http_configs = optional(list(object({
-      domain       = optional(string)
-      path         = string
-      response     = optional(string)
-      tls          = optional(bool, true)
-      status_codes = optional(list(string), ["200"])
+      sticky_sessions = optional(bool, false)
+      cookie_name     = optional(string)
+      cookie_lifetime = optional(number)
+      certificates    = optional(list(string))
+      redirect_http   = optional(bool)
+    })), [])
+    health_check_configs = optional(list(object({
+      protocol = string
+      port     = number
+      interval = number
+      timeout  = number
+      retries  = optional(number, 10)
+
+      http_configs = optional(list(object({
+        domain       = optional(string)
+        path         = string
+        response     = optional(string)
+        tls          = optional(bool, true)
+        status_codes = optional(list(string), ["200"])
+      })), [])
     })), [])
   }))
   default = []

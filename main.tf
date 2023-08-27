@@ -1,3 +1,7 @@
+locals {
+  service_configs = { for v in var.service_configs : "${v.protocol}-${v.listen_port}" => v }
+}
+
 resource "hcloud_load_balancer" "lb" {
   name               = var.name
   load_balancer_type = var.load_balancer_type
@@ -18,13 +22,14 @@ resource "hcloud_load_balancer_network" "lb_network" {
 }
 
 resource "hcloud_load_balancer_service" "lb_service" {
+  for_each         = local.service_configs
   load_balancer_id = hcloud_load_balancer.lb.id
-  protocol         = var.protocol
-  listen_port      = var.listen_port
-  destination_port = var.destination_port
-  proxyprotocol    = var.proxyprotocol
+  protocol         = each.value.protocol
+  listen_port      = each.value.listen_port
+  destination_port = each.value.destination_port
+  proxyprotocol    = each.value.proxyprotocol
   dynamic "http" {
-    for_each = var.http_configs
+    for_each = each.value.http_configs
     content {
       sticky_sessions = http.value["sticky_sessions"]
       cookie_name     = http.value["cookie_name"]
@@ -35,7 +40,7 @@ resource "hcloud_load_balancer_service" "lb_service" {
   }
 
   dynamic "health_check" {
-    for_each = var.health_check_configs
+    for_each = each.value.health_check_configs
     content {
       protocol = health_check.value["protocol"]
       port     = health_check.value["port"]
