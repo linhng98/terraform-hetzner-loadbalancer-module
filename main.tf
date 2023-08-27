@@ -14,6 +14,7 @@ resource "hcloud_load_balancer_network" "lb_network" {
   load_balancer_id        = hcloud_load_balancer.lb.id
   subnet_id               = var.subnet_id
   enable_public_interface = var.enable_public_interface
+  ip                      = var.ip
 }
 
 resource "hcloud_load_balancer_service" "lb_service" {

@@ -16,6 +16,7 @@ module "lb" {
   name             = "example-lb"
   location         = "fsn1"
   subnet_id        = hcloud_network_subnet.foonet.id
+  ip               = "10.10.0.2"
   protocol         = "tcp"
   listen_port      = 80
   destination_port = 30080

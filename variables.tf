@@ -26,6 +26,12 @@ variable "delete_protection" {
   default     = false
 }
 
+variable "ip" {
+  description = "IP address of this LB."
+  type        = string
+}
+
+
 variable "subnet_id" {
   description = "ID of the sub-network which should be added to the Load Balancer."
   type        = string
